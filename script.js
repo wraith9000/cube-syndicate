@@ -1,5 +1,5 @@
 // Game link - Update this to your actual game URL
-const GAME_URL = '../cube/index.html';
+const GAME_URL = 'https://cube-iota-five.vercel.app/';
 
 // Smooth scrolling for navigation links
 function scrollToSection(sectionId) {
