@@ -1,5 +1,286 @@
 // Game link - Update this to your actual game URL
-const GAME_URL = 'https://cube-eight-teal.vercel.app/';
+const GAME_URL = 'game.html';
+
+// Wallet Connection State
+let walletConnected = false;
+let currentAccount = null;
+let currentProvider = null;
+
+// Wallet Connection Functions
+async function connectWallet() {
+    const walletBtn = document.getElementById('wallet-connect-btn');
+    const walletText = document.getElementById('wallet-text');
+    
+    try {
+        // Check if MetaMask is installed
+        if (typeof window.ethereum !== 'undefined') {
+            // Request account access
+            const accounts = await window.ethereum.request({ 
+                method: 'eth_requestAccounts' 
+            });
+            
+            if (accounts.length > 0) {
+                currentAccount = accounts[0];
+                currentProvider = 'MetaMask';
+                walletConnected = true;
+                
+                // Update UI
+                walletBtn.classList.add('connected');
+                walletText.textContent = `${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}`;
+                
+                // Show success message
+                showNotification('Wallet connected successfully!', 'success');
+                
+                // Listen for account changes
+                window.ethereum.on('accountsChanged', handleAccountChange);
+                
+                // Listen for chain changes
+                window.ethereum.on('chainChanged', handleChainChange);
+                
+                return true;
+            }
+        } else {
+            // Check for other wallet providers
+            const otherWallets = await detectOtherWallets();
+            if (otherWallets.length > 0) {
+                showWalletSelectionModal(otherWallets);
+                return false;
+            } else {
+                // No wallets found, show instructions
+                showNotification('No wallet found. Please install MetaMask or another Web3 wallet.', 'error');
+                openMetaMaskInstallation();
+                return false;
+            }
+        }
+    } catch (error) {
+        console.error('Error connecting wallet:', error);
+        
+        if (error.code === 4001) {
+            showNotification('Wallet connection rejected by user.', 'error');
+        } else {
+            showNotification('Failed to connect wallet. Please try again.', 'error');
+        }
+        return false;
+    }
+}
+
+async function detectOtherWallets() {
+    const wallets = [];
+    
+    // Check for Coinbase Wallet
+    if (typeof window.ethereum !== 'undefined' && window.ethereum.isCoinbaseWallet) {
+        wallets.push({ name: 'Coinbase Wallet', provider: 'coinbase' });
+    }
+    
+    // Check for Trust Wallet
+    if (typeof window.ethereum !== 'undefined' && window.ethereum.isTrust) {
+        wallets.push({ name: 'Trust Wallet', provider: 'trust' });
+    }
+    
+    // Check for Binance Wallet
+    if (typeof window.ethereum !== 'undefined' && window.ethereum.isBinanceWallet) {
+        wallets.push({ name: 'Binance Wallet', provider: 'binance' });
+    }
+    
+    // Check for WalletConnect
+    if (typeof window.WalletConnect !== 'undefined') {
+        wallets.push({ name: 'WalletConnect', provider: 'walletconnect' });
+    }
+    
+    return wallets;
+}
+
+function showWalletSelectionModal(wallets) {
+    // Create modal
+    const modal = document.createElement('div');
+    modal.className = 'wallet-modal';
+    modal.innerHTML = `
+        <div class="wallet-modal-content">
+            <div class="wallet-modal-header">
+                <h3>Choose Your Wallet</h3>
+                <button class="wallet-modal-close" onclick="this.closest('.wallet-modal').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="wallet-modal-body">
+                <div class="wallet-options">
+                    ${wallets.map(wallet => `
+                        <button class="wallet-option" onclick="connectSpecificWallet('${wallet.provider}')">
+                            <i class="fas fa-wallet"></i>
+                            <span>${wallet.name}</span>
+                        </button>
+                    `).join('')}
+                    <button class="wallet-option wallet-option-install" onclick="openMetaMaskInstallation()">
+                        <i class="fas fa-download"></i>
+                        <span>Install MetaMask</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+async function connectSpecificWallet(provider) {
+    // Remove modal
+    const modal = document.querySelector('.wallet-modal');
+    if (modal) modal.remove();
+    
+    try {
+        switch (provider) {
+            case 'coinbase':
+            case 'trust':
+            case 'binance':
+                // These use the same ethereum provider
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                if (accounts.length > 0) {
+                    handleSuccessfulConnection(accounts[0], provider);
+                }
+                break;
+            case 'walletconnect':
+                // WalletConnect implementation would go here
+                showNotification('WalletConnect support coming soon!', 'info');
+                break;
+            default:
+                showNotification('Unsupported wallet provider.', 'error');
+        }
+    } catch (error) {
+        console.error('Error connecting specific wallet:', error);
+        showNotification('Failed to connect wallet.', 'error');
+    }
+}
+
+function handleSuccessfulConnection(account, provider) {
+    currentAccount = account;
+    currentProvider = provider;
+    walletConnected = true;
+    
+    const walletBtn = document.getElementById('wallet-connect-btn');
+    const walletText = document.getElementById('wallet-text');
+    
+    // Update UI
+    walletBtn.classList.add('connected');
+    walletText.textContent = `${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}`;
+    
+    // Show success message
+    showNotification(`${provider} wallet connected successfully!`, 'success');
+    
+    // Set up event listeners
+    if (window.ethereum) {
+        window.ethereum.on('accountsChanged', handleAccountChange);
+        window.ethereum.on('chainChanged', handleChainChange);
+    }
+}
+
+function disconnectWallet() {
+    const walletBtn = document.getElementById('wallet-connect-btn');
+    const walletText = document.getElementById('wallet-text');
+    
+    walletConnected = false;
+    currentAccount = null;
+    currentProvider = null;
+    
+    // Update UI
+    walletBtn.classList.remove('connected');
+    walletText.textContent = 'Connect Wallet';
+    
+    // Remove event listeners
+    if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', handleAccountChange);
+        window.ethereum.removeListener('chainChanged', handleChainChange);
+    }
+    
+    showNotification('Wallet disconnected.', 'info');
+}
+
+function handleAccountChange(accounts) {
+    if (accounts.length === 0) {
+        // User disconnected their wallet
+        disconnectWallet();
+    } else {
+        // User switched accounts
+        currentAccount = accounts[0];
+        const walletText = document.getElementById('wallet-text');
+        walletText.textContent = `${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}`;
+        showNotification('Account changed.', 'info');
+    }
+}
+
+function handleChainChange(chainId) {
+    // Reload the page when chain changes
+    window.location.reload();
+}
+
+function openMetaMaskInstallation() {
+    const installUrl = 'https://metamask.io/download/';
+    const confirmed = confirm('MetaMask is required to connect your wallet. Would you like to install it now?');
+    if (confirmed) {
+        window.open(installUrl, '_blank');
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <span class="notification-message">${message}</span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+// Check if wallet is already connected on page load
+async function checkWalletConnection() {
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            const accounts = await window.ethereum.request({ 
+                method: 'eth_accounts' 
+            });
+            
+            if (accounts.length > 0) {
+                currentAccount = accounts[0];
+                currentProvider = 'MetaMask';
+                walletConnected = true;
+                
+                const walletBtn = document.getElementById('wallet-connect-btn');
+                const walletText = document.getElementById('wallet-text');
+                
+                walletBtn.classList.add('connected');
+                walletText.textContent = `${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}`;
+                
+                // Set up event listeners
+                window.ethereum.on('accountsChanged', handleAccountChange);
+                window.ethereum.on('chainChanged', handleChainChange);
+            }
+        } catch (error) {
+            console.error('Error checking wallet connection:', error);
+        }
+    }
+}
 
 // Smooth scrolling for navigation links
 function scrollToSection(sectionId) {
@@ -16,7 +297,7 @@ function scrollToSection(sectionId) {
 function startGame() {
     // Add a small delay for better UX
     setTimeout(() => {
-        window.open(GAME_URL, '_blank');
+        window.location.href = GAME_URL;
     }, 100);
 }
 
@@ -31,6 +312,9 @@ const deviceInfo = {
 
 // Mobile navigation toggle
 document.addEventListener('DOMContentLoaded', function() {
+    // Check wallet connection on page load
+    checkWalletConnection();
+    
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
 
@@ -115,6 +399,19 @@ document.addEventListener('DOMContentLoaded', function() {
             // This is just for additional styling if needed
         });
     });
+
+    // Wallet button click handler
+    const walletBtn = document.getElementById('wallet-connect-btn');
+    if (walletBtn) {
+        walletBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (walletConnected) {
+                disconnectWallet();
+            } else {
+                connectWallet();
+            }
+        });
+    }
 
     // Parallax effect for hero section (disabled on mobile for performance)
     if (!deviceInfo.isMobile) {
@@ -424,6 +721,53 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     `;
     document.head.appendChild(loadingStyle);
+
+    // Leaderboard Modal Logic
+    const leaderboardLinks = document.querySelectorAll('a[href="#leaderboard"]');
+    const leaderboardModal = document.getElementById('leaderboard-modal');
+    const closeLeaderboardBtn = document.getElementById('close-leaderboard');
+    const leaderboardBody = document.getElementById('leaderboard-body');
+
+    // Mock data for top 10 users
+    const leaderboardData = [
+      { user: 'CubeMaster', score: 12000 },
+      { user: 'NeonRunner', score: 11000 },
+      { user: 'PixelHero', score: 10500 },
+      { user: 'CyberAce', score: 9800 },
+      { user: 'Glitchy', score: 9500 },
+      { user: 'RunnerX', score: 9000 },
+      { user: 'SynthWave', score: 8700 },
+      { user: 'BitCrusher', score: 8500 },
+      { user: 'Quantum', score: 8200 },
+      { user: 'VaporCube', score: 8000 }
+    ];
+
+    function openLeaderboardModal() {
+      leaderboardBody.innerHTML = leaderboardData.map((entry, i) =>
+        `<tr><td>${i+1}</td><td>${entry.user}</td><td>${entry.score}</td></tr>`
+      ).join('');
+      leaderboardModal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLeaderboardModal() {
+      leaderboardModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    leaderboardLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        openLeaderboardModal();
+      });
+    });
+
+    closeLeaderboardBtn.addEventListener('click', closeLeaderboardModal);
+    window.addEventListener('click', function(event) {
+      if (event.target === leaderboardModal) {
+        closeLeaderboardModal();
+      }
+    });
 });
 
 // Performance optimization: Throttle scroll events
