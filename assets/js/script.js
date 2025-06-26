@@ -751,29 +751,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const leaderboardBody = document.getElementById('leaderboard-body');
 
     function openLeaderboardModal() {
-        // Use Firebase leaderboard system if available
         if (window.leaderboardSystem && window.leaderboardSystem.isInitialized) {
             window.leaderboardSystem.updateLeaderboardUI();
-        } else {
-            // Fallback to static data if Firebase is not available
-            const fallbackData = [
-                { user: 'CubeMaster', score: 12000 },
-                { user: 'NeonRunner', score: 11000 },
-                { user: 'PixelHero', score: 10500 },
-                { user: 'CyberAce', score: 9800 },
-                { user: 'Glitchy', score: 9500 },
-                { user: 'RunnerX', score: 9000 },
-                { user: 'SynthWave', score: 8700 },
-                { user: 'BitCrusher', score: 8500 },
-                { user: 'Quantum', score: 8200 },
-                { user: 'VaporCube', score: 8000 }
-            ];
-            
-            leaderboardBody.innerHTML = fallbackData.map((entry, i) =>
-                `<tr><td>${i+1}</td><td>${entry.user}</td><td>${entry.score}</td></tr>`
-            ).join('');
         }
-        
         leaderboardModal.style.display = 'block';
         document.body.style.overflow = 'hidden';
     }

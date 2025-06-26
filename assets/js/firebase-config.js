@@ -1,18 +1,5 @@
 // Firebase Configuration and Leaderboard System
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyB0jYBTBZvGZO5ewu4YhsB8z40mVh7GgPs",
-    authDomain: "cube-syndicate-leaderboard.firebaseapp.com",
-    projectId: "cube-syndicate-leaderboard",
-    storageBucket: "cube-syndicate-leaderboard.firebasestorage.app",
-    messagingSenderId: "671324641744",
-    appId: "1:671324641744:web:433beef3f3d536dd07c1d5",
-    measurementId: "G-YVG98S5JJV"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+// Note: Firebase is initialized in the HTML files using ES6 modules
 
 // Leaderboard System
 class LeaderboardSystem {
@@ -27,6 +14,21 @@ class LeaderboardSystem {
         if (this.isInitialized) return;
         
         try {
+            // Wait for Firebase to be available
+            if (!window.db) {
+                console.log('Waiting for Firebase to initialize...');
+                await new Promise(resolve => {
+                    const checkFirebase = () => {
+                        if (window.db) {
+                            resolve();
+                        } else {
+                            setTimeout(checkFirebase, 100);
+                        }
+                    };
+                    checkFirebase();
+                });
+            }
+            
             // Load initial leaderboard
             await this.loadLeaderboard();
             this.isInitialized = true;
@@ -47,14 +49,33 @@ class LeaderboardSystem {
                 gameVersion: '1.0.0'
             };
 
-            await addDoc(collection(window.db, 'scores'), scoreData);
+            await window.addDoc(window.collection(window.db, 'scores'), scoreData);
             console.log('Score submitted successfully:', scoreData);
             
             // Show success notification
             if (typeof showNotification === 'function') {
                 showNotification(`Score of ${score} submitted to leaderboard!`, 'success');
             }
-            
+
+            // --- NEW LOGIC: Keep only top 10 scores in the database ---
+            // Fetch all scores ordered by score descending
+            const scoresRef = window.collection(window.db, 'scores');
+            const q = window.query(scoresRef, window.orderBy('score', 'desc'));
+            const snapshot = await window.getDocs(q);
+            const allScores = [];
+            snapshot.forEach((doc) => {
+                allScores.push({ id: doc.id, ...doc.data() });
+            });
+            // If more than 10, delete the lowest ones
+            if (allScores.length > 10) {
+                const scoresToDelete = allScores.slice(10); // scores after the 10th
+                const { doc, deleteDoc } = window;
+                for (const scoreDoc of scoresToDelete) {
+                    await deleteDoc(doc(window.db, 'scores', scoreDoc.id));
+                }
+            }
+            // --- END NEW LOGIC ---
+
             return true;
         } catch (error) {
             console.error('Error submitting score:', error);
@@ -68,9 +89,9 @@ class LeaderboardSystem {
     // Load leaderboard data
     async loadLeaderboard() {
         try {
-            const scoresRef = collection(window.db, 'scores');
-            const q = query(scoresRef, orderBy('score', 'desc'), limit(10));
-            const snapshot = await getDocs(q);
+            const scoresRef = window.collection(window.db, 'scores');
+            const q = window.query(scoresRef, window.orderBy('score', 'desc'), window.limit(10));
+            const snapshot = await window.getDocs(q);
 
             this.currentLeaderboard = [];
             snapshot.forEach((doc) => {
@@ -93,10 +114,10 @@ class LeaderboardSystem {
             this.unsubscribe();
         }
 
-        const scoresRef = collection(window.db, 'scores');
-        const q = query(scoresRef, orderBy('score', 'desc'), limit(10));
+        const scoresRef = window.collection(window.db, 'scores');
+        const q = window.query(scoresRef, window.orderBy('score', 'desc'), window.limit(10));
         
-        this.unsubscribe = onSnapshot(q, (snapshot) => {
+        this.unsubscribe = window.onSnapshot(q, (snapshot) => {
             this.currentLeaderboard = [];
             snapshot.forEach((doc) => {
                 this.currentLeaderboard.push({
@@ -122,7 +143,6 @@ class LeaderboardSystem {
             const playerName = entry.playerName || 'Anonymous';
             const score = entry.score || 0;
             const walletAddress = entry.walletAddress || 'Anonymous';
-            
             return `
                 <tr>
                     <td>${rank}</td>
@@ -137,7 +157,7 @@ class LeaderboardSystem {
             `;
         }).join('');
 
-        // Add empty rows if less than 10 entries
+        // Always show 10 rows
         const emptyRows = 10 - this.currentLeaderboard.length;
         for (let i = 0; i < emptyRows; i++) {
             leaderboardBody.innerHTML += `
@@ -194,9 +214,9 @@ class LeaderboardSystem {
         if (!walletAddress) return 0;
         
         try {
-            const scoresRef = collection(window.db, 'scores');
-            const q = query(scoresRef, where('walletAddress', '==', walletAddress), orderBy('score', 'desc'), limit(1));
-            const snapshot = await getDocs(q);
+            const scoresRef = window.collection(window.db, 'scores');
+            const q = window.query(scoresRef, window.where('walletAddress', '==', walletAddress), window.orderBy('score', 'desc'), window.limit(1));
+            const snapshot = await window.getDocs(q);
 
             if (!snapshot.empty) {
                 return snapshot.docs[0].data().score;
@@ -211,12 +231,11 @@ class LeaderboardSystem {
     // Check if score is a new personal best
     async isNewPersonalBest(score, walletAddress) {
         if (!walletAddress) return false;
-        
         const bestScore = await this.getUserBestScore(walletAddress);
         return score > bestScore;
     }
 
-    // Cleanup
+    // Cleanup resources
     cleanup() {
         if (this.unsubscribe) {
             this.unsubscribe();
@@ -225,14 +244,14 @@ class LeaderboardSystem {
     }
 }
 
-// Global leaderboard instance
-const leaderboardSystem = new LeaderboardSystem();
+// Create global leaderboard instance
+window.leaderboardSystem = new LeaderboardSystem();
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    leaderboardSystem.init();
-    leaderboardSystem.setupRealtimeUpdates();
-});
-
-// Export for use in other files
-window.leaderboardSystem = leaderboardSystem; 
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.leaderboardSystem.init();
+    });
+} else {
+    window.leaderboardSystem.init();
+} 
