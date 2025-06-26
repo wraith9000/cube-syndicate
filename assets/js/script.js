@@ -6,6 +6,11 @@ let walletConnected = false;
 let currentAccount = null;
 let currentProvider = null;
 
+// Make wallet state globally accessible for game integration
+window.walletConnected = walletConnected;
+window.currentAccount = currentAccount;
+window.currentProvider = currentProvider;
+
 // Wallet Connection Functions
 async function connectWallet() {
     const walletBtn = document.getElementById('wallet-connect-btn');
@@ -165,6 +170,11 @@ function handleSuccessfulConnection(account, provider) {
     currentProvider = provider;
     walletConnected = true;
     
+    // Update global variables for game integration
+    window.currentAccount = currentAccount;
+    window.currentProvider = currentProvider;
+    window.walletConnected = walletConnected;
+    
     const walletBtn = document.getElementById('wallet-connect-btn');
     const walletText = document.getElementById('wallet-text');
     
@@ -190,6 +200,11 @@ function disconnectWallet() {
     currentAccount = null;
     currentProvider = null;
     
+    // Clear global variables for game integration
+    window.walletConnected = false;
+    window.currentAccount = null;
+    window.currentProvider = null;
+    
     // Update UI
     walletBtn.classList.remove('connected');
     walletText.textContent = 'Connect Wallet';
@@ -210,6 +225,8 @@ function handleAccountChange(accounts) {
     } else {
         // User switched accounts
         currentAccount = accounts[0];
+        window.currentAccount = currentAccount; // Update global variable
+        
         const walletText = document.getElementById('wallet-text');
         walletText.textContent = `${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}`;
         showNotification('Account changed.', 'info');
@@ -265,6 +282,11 @@ async function checkWalletConnection() {
                 currentAccount = accounts[0];
                 currentProvider = 'MetaMask';
                 walletConnected = true;
+                
+                // Update global variables for game integration
+                window.currentAccount = currentAccount;
+                window.currentProvider = currentProvider;
+                window.walletConnected = walletConnected;
                 
                 const walletBtn = document.getElementById('wallet-connect-btn');
                 const walletText = document.getElementById('wallet-text');
@@ -728,45 +750,51 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeLeaderboardBtn = document.getElementById('close-leaderboard');
     const leaderboardBody = document.getElementById('leaderboard-body');
 
-    // Mock data for top 10 users
-    const leaderboardData = [
-      { user: 'CubeMaster', score: 12000 },
-      { user: 'NeonRunner', score: 11000 },
-      { user: 'PixelHero', score: 10500 },
-      { user: 'CyberAce', score: 9800 },
-      { user: 'Glitchy', score: 9500 },
-      { user: 'RunnerX', score: 9000 },
-      { user: 'SynthWave', score: 8700 },
-      { user: 'BitCrusher', score: 8500 },
-      { user: 'Quantum', score: 8200 },
-      { user: 'VaporCube', score: 8000 }
-    ];
-
     function openLeaderboardModal() {
-      leaderboardBody.innerHTML = leaderboardData.map((entry, i) =>
-        `<tr><td>${i+1}</td><td>${entry.user}</td><td>${entry.score}</td></tr>`
-      ).join('');
-      leaderboardModal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
+        // Use Firebase leaderboard system if available
+        if (window.leaderboardSystem && window.leaderboardSystem.isInitialized) {
+            window.leaderboardSystem.updateLeaderboardUI();
+        } else {
+            // Fallback to static data if Firebase is not available
+            const fallbackData = [
+                { user: 'CubeMaster', score: 12000 },
+                { user: 'NeonRunner', score: 11000 },
+                { user: 'PixelHero', score: 10500 },
+                { user: 'CyberAce', score: 9800 },
+                { user: 'Glitchy', score: 9500 },
+                { user: 'RunnerX', score: 9000 },
+                { user: 'SynthWave', score: 8700 },
+                { user: 'BitCrusher', score: 8500 },
+                { user: 'Quantum', score: 8200 },
+                { user: 'VaporCube', score: 8000 }
+            ];
+            
+            leaderboardBody.innerHTML = fallbackData.map((entry, i) =>
+                `<tr><td>${i+1}</td><td>${entry.user}</td><td>${entry.score}</td></tr>`
+            ).join('');
+        }
+        
+        leaderboardModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
     }
 
     function closeLeaderboardModal() {
-      leaderboardModal.style.display = 'none';
-      document.body.style.overflow = '';
+        leaderboardModal.style.display = 'none';
+        document.body.style.overflow = '';
     }
 
     leaderboardLinks.forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        openLeaderboardModal();
-      });
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            openLeaderboardModal();
+        });
     });
 
     closeLeaderboardBtn.addEventListener('click', closeLeaderboardModal);
     window.addEventListener('click', function(event) {
-      if (event.target === leaderboardModal) {
-        closeLeaderboardModal();
-      }
+        if (event.target === leaderboardModal) {
+            closeLeaderboardModal();
+        }
     });
 });
 

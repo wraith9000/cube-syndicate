@@ -1713,6 +1713,14 @@ function saveScore(score) {
     recentScores.sort((a, b) => b - a); // Sort descending
     recentScores.splice(10); // Keep only top 10
     localStorage.setItem('slidingCubeRecentScores', JSON.stringify(recentScores));
+    
+    // Submit to Firebase leaderboard if available and wallet is connected
+    if (window.leaderboardSystem && window.currentAccount) {
+        window.leaderboardSystem.submitScore(score, window.currentAccount);
+    } else if (window.leaderboardSystem) {
+        // Submit anonymously if no wallet connected
+        window.leaderboardSystem.submitScore(score, null, 'Anonymous');
+    }
 }
 
 // Show game over menu
