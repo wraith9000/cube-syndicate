@@ -43,7 +43,6 @@ const LEVEL_CHUNKS = [
 
 let currentChunk = null;
 let chunkObstacleIndex = 0;
-let nextObstacleDistance = 0;
 
 let worldHeight; // Will be calculated dynamically
 
@@ -97,9 +96,9 @@ const device = {
 // --- AUDIO MANAGER ---
 const audio = {
     files: {
-        music: 'sfx/music.mp3',
-        laser: 'sfx/laserbraam.mp3',
-        itemcollect: 'sfx/itemcollect.mp3',
+        music: 'assets/audio/music.mp3',
+        laser: 'assets/audio/laserbraam.mp3',
+        itemcollect: 'assets/audio/itemcollect.mp3',
     },
     sounds: {},
     enabled: true,
