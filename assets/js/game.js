@@ -1689,6 +1689,12 @@ function showMenu(menuName) {
         if (element) element.style.display = 'none';
     });
     
+    // Move player to ground for menu consistency
+    if (typeof GROUND_Y !== 'undefined' && typeof player !== 'undefined') {
+        player.y = GROUND_Y - player.height;
+        player.x = 100;
+    }
+    
     if (menuName) {
         // Show requested menu
         let targetMenu;
