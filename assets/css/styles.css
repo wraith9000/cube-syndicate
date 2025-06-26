@@ -2609,4 +2609,11 @@ body::before {
     to {
         transform: rotate(360deg);
     }
+}
+
+@media (min-width: 768px) {
+  .modal-content {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
 } 
