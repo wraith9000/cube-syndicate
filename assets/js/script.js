@@ -11,13 +11,49 @@ window.walletConnected = walletConnected;
 window.currentAccount = currentAccount;
 window.currentProvider = currentProvider;
 
+// Device detection
+const deviceInfo = {
+    isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+    isTablet: /iPad|Android(?=.*\bMobile\b)(?=.*\bSafari\b)/i.test(navigator.userAgent),
+    isTouch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+    isLandscape: window.innerWidth > window.innerHeight,
+    pixelRatio: window.devicePixelRatio || 1,
+    isMetaMaskBrowser: /MetaMask/i.test(navigator.userAgent),
+    isTrustWalletBrowser: /TrustWallet/i.test(navigator.userAgent),
+    isCoinbaseWalletBrowser: /CoinbaseWallet/i.test(navigator.userAgent)
+};
+
 // Wallet Connection Functions
 async function connectWallet() {
     const walletBtn = document.getElementById('wallet-connect-btn');
     const walletText = document.getElementById('wallet-text');
     
     try {
-        // Check if MetaMask is installed
+        // Check if we're in a mobile wallet browser
+        if (deviceInfo.isMobile && (deviceInfo.isMetaMaskBrowser || deviceInfo.isTrustWalletBrowser || deviceInfo.isCoinbaseWalletBrowser)) {
+            // We're in a wallet browser, try to connect normally
+            if (typeof window.ethereum !== 'undefined') {
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                
+                if (accounts.length > 0) {
+                    const provider = deviceInfo.isMetaMaskBrowser ? 'MetaMask' : 
+                                   deviceInfo.isTrustWalletBrowser ? 'Trust Wallet' : 'Coinbase Wallet';
+                    handleSuccessfulConnection(accounts[0], provider);
+                    return true;
+                }
+            }
+        }
+        
+        // Check if we're in a regular mobile browser
+        if (deviceInfo.isMobile && !deviceInfo.isMetaMaskBrowser && !deviceInfo.isTrustWalletBrowser && !deviceInfo.isCoinbaseWalletBrowser) {
+            // Regular mobile browser - show mobile wallet options
+            showMobileWalletModal();
+            return false;
+        }
+        
+        // Desktop wallet connection
         if (typeof window.ethereum !== 'undefined') {
             // Request account access
             const accounts = await window.ethereum.request({ 
@@ -44,18 +80,18 @@ async function connectWallet() {
                 
                 return true;
             }
+        }
+        
+        // Check for other wallet providers
+        const otherWallets = await detectOtherWallets();
+        if (otherWallets.length > 0) {
+            showWalletSelectionModal(otherWallets);
+            return false;
         } else {
-            // Check for other wallet providers
-            const otherWallets = await detectOtherWallets();
-            if (otherWallets.length > 0) {
-                showWalletSelectionModal(otherWallets);
-                return false;
-            } else {
-                // No wallets found, show instructions
-                showNotification('No wallet found. Please install MetaMask or another Web3 wallet.', 'error');
-                openMetaMaskInstallation();
-                return false;
-            }
+            // No wallets found, show instructions
+            showNotification('No wallet found. Please install MetaMask or another Web3 wallet.', 'error');
+            openMetaMaskInstallation();
+            return false;
         }
     } catch (error) {
         console.error('Error connecting wallet:', error);
@@ -239,6 +275,13 @@ function handleChainChange(chainId) {
 }
 
 function openMetaMaskInstallation() {
+    if (deviceInfo.isMobile) {
+        // On mobile, show mobile wallet options instead of desktop installation
+        showMobileWalletModal();
+        return;
+    }
+    
+    // Desktop installation
     const installUrl = 'https://metamask.io/download/';
     const confirmed = confirm('MetaMask is required to connect your wallet. Would you like to install it now?');
     if (confirmed) {
@@ -272,6 +315,27 @@ function showNotification(message, type = 'info') {
 
 // Check if wallet is already connected on page load
 async function checkWalletConnection() {
+    // Check if we're in a mobile wallet browser first
+    if (deviceInfo.isMobile && (deviceInfo.isMetaMaskBrowser || deviceInfo.isTrustWalletBrowser || deviceInfo.isCoinbaseWalletBrowser)) {
+        if (typeof window.ethereum !== 'undefined') {
+            try {
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_accounts' 
+                });
+                
+                if (accounts.length > 0) {
+                    const provider = deviceInfo.isMetaMaskBrowser ? 'MetaMask' : 
+                                   deviceInfo.isTrustWalletBrowser ? 'Trust Wallet' : 'Coinbase Wallet';
+                    handleSuccessfulConnection(accounts[0], provider);
+                    return;
+                }
+            } catch (error) {
+                console.error('Error checking mobile wallet connection:', error);
+            }
+        }
+    }
+    
+    // Regular desktop wallet check
     if (typeof window.ethereum !== 'undefined') {
         try {
             const accounts = await window.ethereum.request({ 
@@ -322,15 +386,6 @@ function startGame() {
         window.location.href = GAME_URL;
     }, 100);
 }
-
-// Device detection and optimization
-const deviceInfo = {
-    isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-    isTablet: /iPad|Android(?=.*\bMobile\b)(?=.*\bSafari\b)/i.test(navigator.userAgent),
-    isTouch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
-    isLandscape: window.innerWidth > window.innerHeight,
-    pixelRatio: window.devicePixelRatio || 1
-};
 
 // Mobile navigation toggle
 document.addEventListener('DOMContentLoaded', function() {
@@ -1147,4 +1202,123 @@ window.addEventListener('beforeinstallprompt', (e) => {
     });
     
     document.body.appendChild(installButton);
-}); 
+});
+
+function showMobileWalletModal() {
+    const modal = document.createElement('div');
+    modal.className = 'wallet-modal';
+    modal.innerHTML = `
+        <div class="wallet-modal-content">
+            <div class="wallet-modal-header">
+                <h3>Connect Wallet</h3>
+                <button class="wallet-modal-close" onclick="this.closest('.wallet-modal').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="wallet-modal-body">
+                <p style="color: #fff; margin-bottom: 1.5rem; text-align: center;">
+                    Connect your wallet using WalletConnect. Works with MetaMask, Trust Wallet, Rainbow, and more.
+                </p>
+                <div class="wallet-options">
+                    <button class="wallet-option" id="walletconnect-btn">
+                        <i class="fas fa-qrcode"></i>
+                        <span>Connect with WalletConnect</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    // Attach WalletConnect handler
+    setTimeout(() => {
+        const btn = document.getElementById('walletconnect-btn');
+        if (btn) btn.onclick = startWalletConnect;
+    }, 100);
+}
+
+// WalletConnect v2 (Web3Modal) integration
+let wcModal = null;
+let wcClient = null;
+let wcProvider = null;
+
+async function startWalletConnect() {
+    // Prevent multiple modals
+    if (wcModal) {
+        wcModal.open();
+        return;
+    }
+
+    // WalletConnect projectId (get your own at https://cloud.walletconnect.com)
+    const projectId = 'baf6e6e2e2e6b1e2e2e6e2e2e2e2e2e2'; // Demo projectId, replace with your own for production
+
+    // Chains (Ethereum mainnet by default)
+    const chains = [1];
+
+    // Create wagmiConfig
+    const wagmiConfig = window.wagmi.createConfig({
+        chains: window.wagmi.chains,
+        transports: {
+            [1]: window.wagmi.transports.public(),
+        },
+    });
+
+    // Create Ethereum client
+    wcClient = window.w3m.createWeb3Modal({
+        wagmiConfig,
+        projectId,
+        enableAnalytics: false,
+        themeMode: 'dark',
+        themeVariables: {
+            '--w3m-accent': '#00f6ff',
+            '--w3m-background': '#0d0221',
+        },
+    });
+
+    // Open the modal
+    wcClient.open();
+
+    // Listen for connection
+    wcClient.subscribeState(async (state) => {
+        if (state.selectedNetworkId && state.selectedAccount) {
+            // Connected
+            const account = state.selectedAccount;
+            walletConnected = true;
+            currentAccount = account;
+            currentProvider = 'WalletConnect';
+            window.walletConnected = walletConnected;
+            window.currentAccount = currentAccount;
+            window.currentProvider = currentProvider;
+            updateWalletUI(account);
+            showNotification('Wallet connected!', 'success');
+            wcClient.close();
+        } else if (!state.selectedAccount) {
+            // Disconnected
+            walletConnected = false;
+            currentAccount = null;
+            currentProvider = null;
+            window.walletConnected = false;
+            window.currentAccount = null;
+            window.currentProvider = null;
+            updateWalletUI(null);
+            showNotification('Wallet disconnected.', 'info');
+        }
+    });
+}
+
+function updateWalletUI(account) {
+    const walletBtn = document.getElementById('wallet-connect-btn');
+    const walletText = document.getElementById('wallet-text');
+    if (account) {
+        walletBtn.classList.add('connected');
+        walletText.textContent = `${account.slice(0, 6)}...${account.slice(-4)}`;
+    } else {
+        walletBtn.classList.remove('connected');
+        walletText.textContent = 'Connect Wallet';
+    }
+} 
