@@ -709,40 +709,350 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.add('loaded');
     });
 
-    // Add CSS for loading state
+    // Create 3D cube loading screen with progress bar
+    const loadingScreen = document.createElement('div');
+    loadingScreen.id = 'loading-screen';
+    loadingScreen.innerHTML = `
+        <div class="loading-container">
+            <div class="loading-cube">
+                <div class="cube-face front"></div>
+                <div class="cube-face back"></div>
+                <div class="cube-face right"></div>
+                <div class="cube-face left"></div>
+                <div class="cube-face top"></div>
+                <div class="cube-face bottom"></div>
+            </div>
+            <div class="loading-text">SLIDING CUBE</div>
+            <div class="loading-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-text">0%</div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(loadingScreen);
+
+    // Add CSS for the new loading screen
     const loadingStyle = document.createElement('style');
     loadingStyle.textContent = `
-        body:not(.loaded) {
-            overflow: hidden;
-        }
-        
-        body:not(.loaded)::after {
-            content: '';
+        #loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #0d0221;
+            background: linear-gradient(135deg, #0d0221 0%, #1a0033 50%, #0d0221 100%);
             z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: opacity 0.5s ease-out;
         }
-        
-        body:not(.loaded)::before {
-            content: 'Loading...';
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+
+        #loading-screen.fade-out {
+            opacity: 0;
+        }
+
+        .loading-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .loading-cube {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: cubeRotate 2s infinite linear;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #00f6ff, #ff00c1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 246, 255, 0.5);
+        }
+
+        .cube-face.front { transform: rotateY(0deg) translateZ(40px); }
+        .cube-face.back { transform: rotateY(180deg) translateZ(40px); }
+        .cube-face.right { transform: rotateY(90deg) translateZ(40px); }
+        .cube-face.left { transform: rotateY(-90deg) translateZ(40px); }
+        .cube-face.top { transform: rotateX(90deg) translateZ(40px); }
+        .cube-face.bottom { transform: rotateX(-90deg) translateZ(40px); }
+
+        @keyframes cubeRotate {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        .loading-text {
             color: #00f6ff;
-            font-size: 1.5rem;
-            z-index: 10000;
-            text-shadow: 0 0 20px rgba(0, 246, 255, 0.6);
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(0, 246, 255, 0.8);
+            letter-spacing: 3px;
+            animation: textGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 20px rgba(0, 246, 255, 0.8); }
+            100% { text-shadow: 0 0 30px rgba(0, 246, 255, 1), 0 0 40px rgba(0, 246, 255, 0.6); }
+        }
+
+        .loading-progress {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 300px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 246, 255, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00f6ff, #ff00c1);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 246, 255, 0.6);
+        }
+
+        .progress-text {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        body:not(.loaded) {
+            overflow: hidden;
+        }
+
+        body.loaded #loading-screen {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .loading-cube {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .cube-face {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .cube-face.front { transform: rotateY(0deg) translateZ(30px); }
+            .cube-face.back { transform: rotateY(180deg) translateZ(30px); }
+            .cube-face.right { transform: rotateY(90deg) translateZ(30px); }
+            .cube-face.left { transform: rotateY(-90deg) translateZ(30px); }
+            .cube-face.top { transform: rotateX(90deg) translateZ(30px); }
+            .cube-face.bottom { transform: rotateX(-90deg) translateZ(30px); }
+            
+            .loading-text {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+            
+            .loading-progress {
+                width: 250px;
+            }
         }
     `;
     document.head.appendChild(loadingStyle);
+
+    // Simulate loading progress (slower version)
+    setTimeout(() => {
+        let progress = 0;
+        const progressFill = document.querySelector('.progress-fill');
+        const progressText = document.querySelector('.progress-text');
+        
+        if (progressFill && progressText) {
+            const loadingInterval = setInterval(() => {
+                // Slower progress increments
+                progress += Math.random() * 8 + 2; // Between 2-10% per step
+                if (progress > 100) progress = 100;
+                
+                progressFill.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    // Longer delay before hiding
+                    setTimeout(() => {
+                        document.body.classList.add('loaded');
+                        setTimeout(() => {
+                            const loadingScreen = document.getElementById('loading-screen');
+                            if (loadingScreen) {
+                                loadingScreen.remove();
+                            }
+                        }, 800); // Longer fade-out
+                    }, 1000); // Longer delay before starting fade
+                }
+            }, 200); // Slower update interval (200ms instead of 100ms)
+        }
+    }, 10);
+
+    // Real loading progress based on actual page resources
+    setTimeout(() => {
+        let progress = 0;
+        const progressFill = document.querySelector('.progress-fill');
+        const progressText = document.querySelector('.progress-text');
+        
+        if (progressFill && progressText) {
+            // Track loading of different resources
+            let loadedResources = 0;
+            let totalResources = 0;
+            
+            // Count images
+            const images = document.querySelectorAll('img');
+            totalResources += images.length;
+            
+            // Count CSS files
+            const cssFiles = document.querySelectorAll('link[rel="stylesheet"]');
+            totalResources += cssFiles.length;
+            
+            // Count JavaScript files
+            const scripts = document.querySelectorAll('script[src]');
+            totalResources += scripts.length;
+            
+            // Add minimum resources to ensure progress
+            totalResources = Math.max(totalResources, 5);
+            
+            // Track image loading
+            images.forEach(img => {
+                if (img.complete) {
+                    loadedResources++;
+                } else {
+                    img.addEventListener('load', () => {
+                        loadedResources++;
+                        updateProgress();
+                    });
+                    img.addEventListener('error', () => {
+                        loadedResources++; // Count errors as loaded
+                        updateProgress();
+                    });
+                }
+            });
+            
+            // Track CSS loading
+            cssFiles.forEach(link => {
+                if (link.sheet) {
+                    loadedResources++;
+                } else {
+                    link.addEventListener('load', () => {
+                        loadedResources++;
+                        updateProgress();
+                    });
+                    link.addEventListener('error', () => {
+                        loadedResources++; // Count errors as loaded
+                        updateProgress();
+                    });
+                }
+            });
+            
+            // Track script loading
+            scripts.forEach(script => {
+                if (script.complete || script.readyState === 'complete') {
+                    loadedResources++;
+                } else {
+                    script.addEventListener('load', () => {
+                        loadedResources++;
+                        updateProgress();
+                    });
+                    script.addEventListener('error', () => {
+                        loadedResources++; // Count errors as loaded
+                        updateProgress();
+                    });
+                }
+            });
+            
+            // Initial progress update
+            updateProgress();
+            
+            // Fallback: if no resources to track, use DOMContentLoaded
+            if (totalResources === 0) {
+                document.addEventListener('DOMContentLoaded', () => {
+                    progress = 100;
+                    updateProgress();
+                });
+            }
+            
+            // Also listen for window load event
+            window.addEventListener('load', () => {
+                progress = 100;
+                updateProgress();
+            });
+            
+            function updateProgress() {
+                // Calculate progress based on loaded resources
+                const resourceProgress = (loadedResources / totalResources) * 80; // Max 80% from resources
+                
+                // Add some smooth progression
+                if (progress < resourceProgress) {
+                    progress = Math.min(progress + 5, resourceProgress);
+                }
+                
+                // Ensure minimum progress
+                progress = Math.max(progress, 10);
+                
+                progressFill.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '%';
+                
+                // If everything is loaded, complete the progress
+                if (loadedResources >= totalResources && progress >= 80) {
+                    progress = 100;
+                    progressFill.style.width = '100%';
+                    progressText.textContent = '100%';
+                    
+                    // Wait a moment then fade out
+                    setTimeout(() => {
+                        document.body.classList.add('loaded');
+                        setTimeout(() => {
+                            const loadingScreen = document.getElementById('loading-screen');
+                            if (loadingScreen) {
+                                loadingScreen.remove();
+                            }
+                        }, 800);
+                    }, 500);
+                }
+            }
+            
+            // Fallback timer to ensure loading completes
+            setTimeout(() => {
+                if (progress < 100) {
+                    progress = 100;
+                    progressFill.style.width = '100%';
+                    progressText.textContent = '100%';
+                    
+                    setTimeout(() => {
+                        document.body.classList.add('loaded');
+                        setTimeout(() => {
+                            const loadingScreen = document.getElementById('loading-screen');
+                            if (loadingScreen) {
+                                loadingScreen.remove();
+                            }
+                        }, 800);
+                    }, 500);
+                }
+            }, 8000); // Maximum 8 seconds fallback
+        }
+    }, 10);
 
     // Leaderboard Modal Logic
     const leaderboardLinks = document.querySelectorAll('a[href="#leaderboard"]');
