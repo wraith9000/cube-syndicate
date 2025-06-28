@@ -16,7 +16,6 @@ class LeaderboardSystem {
         try {
             // Wait for Firebase to be available
             if (!window.db) {
-                console.log('Waiting for Firebase to initialize...');
                 await new Promise(resolve => {
                     const checkFirebase = () => {
                         if (window.db) {
@@ -32,7 +31,6 @@ class LeaderboardSystem {
             // Load initial leaderboard
             await this.loadLeaderboard();
             this.isInitialized = true;
-            console.log('Leaderboard system initialized');
         } catch (error) {
             console.error('Error initializing leaderboard:', error);
         }
@@ -50,7 +48,6 @@ class LeaderboardSystem {
             };
 
             await window.addDoc(window.collection(window.db, 'scores'), scoreData);
-            console.log('Score submitted successfully:', scoreData);
             
             // Show success notification
             if (typeof showNotification === 'function') {

@@ -96,9 +96,9 @@ const device = {
 // --- AUDIO MANAGER ---
 const audio = {
     files: {
-        music: 'assets/audio/music.mp3',
-        laser: 'assets/audio/laserbraam.mp3',
-        itemcollect: 'assets/audio/itemcollect.mp3',
+        music: '/assets/audio/music.mp3',
+        laser: '/assets/audio/laserbraam.mp3',
+        itemcollect: '/assets/audio/itemcollect.mp3',
     },
     sounds: {},
     enabled: true,
@@ -144,7 +144,6 @@ const audio = {
         
         const sound = this.sounds[soundName];
         if (sound) {
-            console.log(`Playing sound: ${soundName}`); // Debug log
             sound.currentTime = 0;
             
             // Set appropriate volume based on sound type
@@ -160,11 +159,9 @@ const audio = {
             const playPromise = sound.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    console.log(`Audio play prevented for ${soundName}:`, error);
+                    // Audio play was prevented
                 });
             }
-        } else {
-            console.log(`Sound not found: ${soundName}`); // Debug log
         }
     },
     
@@ -816,16 +813,13 @@ function updateObstacles(deltaTime) {
             player.y < obstacle.y + obstacle.height &&
             player.y + player.height > obstacle.y
         ) {
-            console.log('Collision detected! Shield status:', player.shielded);
             if (player.shielded) {
-                console.log('Shield consumed!');
                 player.shielded = false;
                 createExplosion(obstacle.x + obstacle.width / 2, obstacle.y + obstacle.height / 2);
                 // Remove the obstacle when shield is consumed
                 obstacles.splice(i, 1);
                 // Shield break effect handled by createExplosion
             } else {
-                console.log('Player died - no shield!');
                 state = 'over'; // Set state to over immediately
                 saveScore(score);
                 if (score > highScore) {
@@ -970,7 +964,6 @@ function restartGame() {
     player.history = [];
     player.shielded = false;
     player.laserReady = false;
-    console.log('Game restarted - shield reset to false');
     
     // Reset spawning system
     currentChunk = null;
@@ -1441,10 +1434,8 @@ function updatePowerUps(deltaTime) {
             player.y < powerUp.y + powerUp.height &&
             player.y + player.height > powerUp.y
         ) {
-            console.log('Powerup collected! Type:', powerUp.type);
             audio.play('itemcollect');
             if (powerUp.type === 'shield') {
-                console.log('Shield activated!');
                 player.shielded = true;
                 showToast('Shield activated!', 2000);
             } else if (powerUp.type === 'slow-mo') {
@@ -1596,8 +1587,6 @@ function activateLaser() {
     }
     
     // Play laser sound for activation
-    console.log('Attempting to play laser sound...'); // Debug log
-    console.log('Audio enabled:', audio.enabled); // Debug log
     audio.play('laser');
     
     // Flash effect - briefly make the screen white
@@ -1628,7 +1617,6 @@ resizeCanvas();
 audio.load(() => {
     // This callback runs when all audio files are loaded.
     // In a more complex game, you might show a "Click to Start" button here.
-    console.log("Audio files loaded and ready.");
     audio.loadSettings(); // Load saved volume settings
 });
 
@@ -1769,7 +1757,7 @@ function initMenuSystem() {
     });
 
     document.getElementById('homeBtn')?.addEventListener('click', () => {
-        window.location.href = 'index.html';
+        window.location.href = '../../index.html';
     });
 
     document.getElementById('settingsBtn')?.addEventListener('click', () => {
