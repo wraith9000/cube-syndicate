@@ -1,5 +1,5 @@
 // Game link - Update this to your actual game URL
-const GAME_URL = '/src/pages/game.html';
+const GAME_URL = 'game.html';
 
 // Wallet Connection State
 let walletConnected = false;
@@ -1106,6 +1106,19 @@ function throttle(func, limit) {
 window.addEventListener('scroll', throttle(function() {
     // Scroll-based animations here
 }, 16)); // ~60fps
+
+// Service Worker registration for PWA capabilities
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+                console.log('SW registered: ', registration);
+            })
+            .catch(function(registrationError) {
+                console.log('SW registration failed: ', registrationError);
+            });
+    });
+}
 
 // Add to home screen functionality
 let deferredPrompt;

@@ -18,7 +18,6 @@ A complete web application featuring a modern, responsive landing page and an in
 - **Sound System**: Background music and sound effects with volume controls
 - **Score System**: Local high score tracking and recent scores
 - **Mobile Optimized**: Touch controls and orientation detection
-- **Firebase Integration**: Global leaderboard with real-time updates
 
 ## 🚀 Quick Start
 
@@ -42,34 +41,18 @@ A complete web application featuring a modern, responsive landing page and an in
 
 ```
 cube-syndicate/
-├── index.html                    # Entry point (redirects to src/pages/)
-├── src/
-│   ├── pages/
-│   │   ├── index.html            # Landing page
-│   │   └── game.html             # Game interface
-│   └── config/
-│       ├── manifest.json         # PWA manifest
-│       └── sw.js                 # Service worker
-├── assets/
-│   ├── css/
-│   │   ├── styles.css            # Landing page styles
-│   │   └── game.css              # Game interface styles
-│   ├── js/
-│   │   ├── script.js             # Landing page functionality
-│   │   ├── game.js               # Game logic and mechanics
-│   │   └── firebase-config.js    # Firebase leaderboard system
-│   ├── audio/
-│   │   ├── music.mp3             # Background music
-│   │   ├── laserbraam.mp3        # Laser sound effect
-│   │   └── itemcollect.mp3       # Power-up collection sound
-│   └── icons/
-│       ├── icon-192.png          # PWA icon (192x192)
-│       └── icon-512.png          # PWA icon (512x512)
-├── deploy/                       # Deployment configurations
-├── LICENSE                       # MIT License
-├── README.md                     # This file
-├── FIREBASE_SETUP.md             # Firebase configuration guide
-└── PROJECT_ORGANIZATION.md       # Project organization details
+├── index.html          # Main landing page
+├── styles.css          # Landing page styles
+├── script.js           # Landing page functionality
+├── game.html           # Game page
+├── game.css            # Game styles
+├── game.js             # Game logic and mechanics
+├── sfx/                # Sound effects and music
+│   ├── music.mp3
+│   ├── laserbraam.mp3
+│   └── itemcollect.mp3
+├── manifest.json       # PWA manifest
+└── README.md           # This file
 ```
 
 ## 🎯 How It Works
@@ -101,15 +84,15 @@ cube-syndicate/
 ## 🔧 Customization
 
 ### Landing Page
-- Update `assets/js/script.js` to modify wallet connection behavior
-- Edit `assets/css/styles.css` to change the visual theme
-- Modify `src/pages/index.html` to update content and links
+- Update `script.js` to modify wallet connection behavior
+- Edit `styles.css` to change the visual theme
+- Modify `index.html` to update content and links
 
 ### Game
-- Adjust game speed and difficulty in `assets/js/game.js`
+- Adjust game speed and difficulty in `game.js`
 - Modify visual effects and colors
 - Add new power-ups or obstacles
-- Update sound effects in the `assets/audio/` directory
+- Update sound effects in the `sfx/` directory
 
 ## 🌐 Deployment
 
@@ -127,16 +110,6 @@ The project includes Progressive Web App features:
 - Installable on mobile devices
 - Offline capability (with service worker)
 - App-like experience
-- Custom icons and manifest
-
-## 🔥 Firebase Integration
-
-The game includes Firebase integration for:
-
-- Global leaderboard with real-time updates
-- Score persistence across devices
-- User identification via Web3 wallets
-- Anonymous score tracking
 
 ## 🤝 Contributing
 
