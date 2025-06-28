@@ -2331,8 +2331,6 @@ body::before {
     .wallet-modal-content {
         width: 95%;
         max-width: none;
-        margin: 20px;
-        max-height: 90vh;
     }
     
     .wallet-modal-header {
@@ -2350,57 +2348,6 @@ body::before {
     .wallet-option {
         padding: 0.75rem 1rem;
         font-size: 0.9rem;
-        min-height: 50px;
-    }
-    
-    .wallet-option i {
-        font-size: 1.1rem;
-        width: 24px;
-    }
-}
-
-/* Additional mobile optimizations for wallet modals */
-@media (max-width: 480px) {
-    .wallet-modal-content {
-        width: 98%;
-        margin: 10px;
-        border-radius: 10px;
-    }
-    
-    .wallet-modal-header {
-        padding: 0.75rem;
-    }
-    
-    .wallet-modal-header h3 {
-        font-size: 1rem;
-    }
-    
-    .wallet-modal-body {
-        padding: 0.75rem;
-    }
-    
-    .wallet-option {
-        padding: 0.6rem 0.8rem;
-        font-size: 0.85rem;
-        min-height: 45px;
-    }
-    
-    .wallet-option i {
-        font-size: 1rem;
-        width: 20px;
-    }
-}
-
-/* Touch-friendly wallet options */
-@media (hover: none) and (pointer: coarse) {
-    .wallet-option {
-        min-height: 60px;
-        padding: 1rem 1.5rem;
-    }
-    
-    .wallet-option:active {
-        background: rgba(0, 246, 255, 0.2);
-        transform: scale(0.98);
     }
 }
 
