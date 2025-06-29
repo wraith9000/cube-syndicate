@@ -394,7 +394,6 @@ const player = {
                     this.laserReady = false;
                     setTimeout(() => {
                         activateLaser();
-                        showToast('Laser activated! Destroy 3 obstacles!', 2000);
                     }, 100); // 100 ms delay
                 }
             }
