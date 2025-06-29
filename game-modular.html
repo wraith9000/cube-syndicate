@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sliding Cube - Modular Version</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="assets/css/game.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- Main Menu -->
+    <div id="mainMenu" class="menu-overlay">
+        <div class="menu-container">
+            <div class="menu-header">
+                <h1 class="game-title">SLIDING CUBE</h1>
+                <div class="title-glow"></div>
+            </div>
+            
+            <div class="menu-options">
+                <button id="startGameBtn" class="menu-btn primary-btn" type="button">
+                    <span class="btn-text">START GAME</span>
+                    <div class="btn-glow"></div>
+                </button>
+                
+                <button id="homeBtn" class="menu-btn" type="button">
+                    <span class="btn-text">HOME</span>
+                    <div class="btn-glow"></div>
+                </button>
+                
+                <button id="settingsBtn" class="menu-btn" type="button">
+                    <span class="btn-text">SETTINGS</span>
+                    <div class="btn-glow"></div>
+                </button>
+                
+                <button id="donationBtn" class="menu-btn" type="button">
+                    <span class="btn-text">SUPPORT</span>
+                    <div class="btn-glow"></div>
+                </button>
+            </div>
+            
+            <div class="menu-footer">
+                <p class="version-text">v2.0.0 (Modular)</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Menu -->
+    <div id="settingsMenu" class="menu-overlay" style="display: none;">
+        <div class="menu-container">
+            <div class="menu-header">
+                <h2 class="menu-title">SETTINGS</h2>
+                <button id="closeSettingsBtn" class="close-menu-btn" type="button">&times;</button>
+            </div>
+            
+            <div class="settings-content">
+                <div class="setting-group">
+                    <label class="setting-label">MUSIC VOLUME</label>
+                    <input type="range" id="musicVolume" class="volume-slider" min="0" max="100" value="40">
+                    <span class="volume-value">40%</span>
+                </div>
+                
+                <div class="setting-group">
+                    <label class="setting-label">SFX VOLUME</label>
+                    <input type="range" id="sfxVolume" class="volume-slider" min="0" max="100" value="80">
+                    <span class="volume-value">80%</span>
+                </div>
+                
+                <div class="setting-group">
+                    <label class="setting-label">VISUAL EFFECTS</label>
+                    <div class="toggle-container">
+                        <input type="checkbox" id="visualEffects" class="toggle-input" checked>
+                        <label for="visualEffects" class="toggle-label"></label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-actions">
+                <button id="saveSettingsBtn" class="menu-btn primary-btn" type="button">SAVE</button>
+                <button id="backToMainBtn" class="menu-btn" type="button">BACK</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leaderboard Menu -->
+    <div id="leaderboardMenu" class="menu-overlay" style="display: none;">
+        <div class="menu-container">
+            <div class="menu-header">
+                <h2 class="menu-title">LEADERBOARD</h2>
+                <button id="closeLeaderboardBtn" class="close-menu-btn" type="button">&times;</button>
+            </div>
+            <div class="high-score-content">
+                <div class="score-display">
+                    <div class="current-score">
+                        <span class="score-label">YOUR BEST SCORE</span>
+                        <span id="currentHighScore" class="score-value">0</span>
+                    </div>
+                </div>
+                <div class="score-history">
+                    <h3>RECENT SCORES</h3>
+                    <div id="scoreList" class="score-list">
+                        <!-- Scores will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            <div class="menu-actions">
+                <button id="resetScoresBtn" class="menu-btn danger-btn" type="button">RESET SCORES</button>
+                <button id="backFromLeaderboardBtn" class="menu-btn" type="button">BACK</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Game Over Menu -->
+    <div id="gameOverMenu" class="menu-overlay" style="display: none;">
+        <div class="menu-container">
+            <div class="menu-header">
+                <h2 class="menu-title">GAME OVER</h2>
+            </div>
+            
+            <div class="game-over-content">
+                <div class="final-score">
+                    <span class="score-label">FINAL SCORE</span>
+                    <span id="finalScore" class="score-value">0</span>
+                </div>
+                
+                <div class="score-comparison">
+                    <div class="score-item">
+                        <span class="score-label">HIGH SCORE</span>
+                        <span id="gameOverHighScore" class="score-value">0</span>
+                    </div>
+                </div>
+                
+                <div id="newRecordMessage" class="new-record" style="display: none;">
+                    <span class="record-text">🎉 NEW RECORD! 🎉</span>
+                </div>
+            </div>
+            
+            <div class="menu-actions">
+                <button id="playAgainBtn" class="menu-btn primary-btn" type="button">PLAY AGAIN</button>
+                <button id="mainMenuBtn" class="menu-btn" type="button">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Donation Section -->
+    <div id="donationSection" class="donation-section" style="display: none;">
+        <div class="donation-content">
+            <button id="closeDonationBtn" class="close-btn" type="button">&times;</button>
+            <h3>Support the Developer</h3>
+            <p>If you enjoy this game, consider supporting its development!</p>
+            <div class="wallet-container">
+                <label class="wallet-label">ARENA:</label>
+                <input type="text" id="walletAddress" value="0x922abf80ce0a08d17a0e308beb261e3c67eb0e1c" readonly>
+                <button id="copyBtn" class="copy-btn" type="button">COPY</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Subtle rotation indicator -->
+    <div id="rotationIndicator" class="rotation-indicator" style="display: none;">
+        <div class="rotation-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <span class="rotation-text">Rotate for better view</span>
+        <button class="rotation-close-btn">&times;</button>
+    </div>
+
+    <!-- Toast notification system -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, where, serverTimestamp, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB0jYBTBZvGZO5ewu4YhsB8z40mVh7GgPs",
+            authDomain: "cube-syndicate-leaderboard.firebaseapp.com",
+            projectId: "cube-syndicate-leaderboard",
+            storageBucket: "cube-syndicate-leaderboard.firebasestorage.app",
+            messagingSenderId: "671324641744",
+            appId: "1:671324641744:web:433beef3f3d536dd07c1d5",
+            measurementId: "G-YVG98S5JJV"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // Make Firebase available globally
+        window.firebase = {
+            firestore: {
+                FieldValue: {
+                    serverTimestamp: serverTimestamp
+                }
+            }
+        };
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.limit = limit;
+        window.onSnapshot = onSnapshot;
+        window.where = where;
+        window.getDocs = getDocs;
+        window.doc = doc;
+        window.deleteDoc = deleteDoc;
+    </script>
+
+    <!-- Game Modules -->
+    <script type="module">
+        import GameEngine from './assets/js/modules/GameEngine.js';
+        import { gameState } from './assets/js/modules/GameState.js';
+        import { audioManager } from './assets/js/modules/AudioManager.js';
+        import { CONFIG } from './assets/js/modules/Config.js';
+
+        // Global variables for UI access
+        window.gameState = gameState;
+        window.audioManager = audioManager;
+        window.CONFIG = CONFIG;
+
+        // Initialize game engine
+        const canvas = document.getElementById('gameCanvas');
+        let gameEngine = null;
+
+        // UI Elements
+        const mainMenu = document.getElementById('mainMenu');
+        const settingsMenu = document.getElementById('settingsMenu');
+        const leaderboardMenu = document.getElementById('leaderboardMenu');
+        const gameOverMenu = document.getElementById('gameOverMenu');
+        const donationSection = document.getElementById('donationSection');
+        const rotationIndicator = document.getElementById('rotationIndicator');
+
+        // Buttons
+        const startGameBtn = document.getElementById('startGameBtn');
+        const homeBtn = document.getElementById('homeBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const donationBtn = document.getElementById('donationBtn');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const backToMainBtn = document.getElementById('backToMainBtn');
+        const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
+        const resetScoresBtn = document.getElementById('resetScoresBtn');
+        const backFromLeaderboardBtn = document.getElementById('backFromLeaderboardBtn');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const mainMenuBtn = document.getElementById('mainMenuBtn');
+        const closeDonationBtn = document.getElementById('closeDonationBtn');
+        const copyBtn = document.getElementById('copyBtn');
+
+        // Settings elements
+        const musicVolumeSlider = document.getElementById('musicVolume');
+        const sfxVolumeSlider = document.getElementById('sfxVolume');
+        const visualEffectsToggle = document.getElementById('visualEffects');
+
+        // Score elements
+        const currentHighScore = document.getElementById('currentHighScore');
+        const finalScore = document.getElementById('finalScore');
+        const gameOverHighScore = document.getElementById('gameOverHighScore');
+        const newRecordMessage = document.getElementById('newRecordMessage');
+
+        // Initialize game
+        async function initGame() {
+            // Create game engine
+            gameEngine = new GameEngine(canvas);
+            
+            // Load audio
+            gameEngine.loadAudio(() => {
+                console.log('Audio loaded successfully');
+                loadSettingsToUI();
+            });
+
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Check device orientation
+            checkOrientation();
+            
+            // Show main menu
+            showMenu('main');
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Menu navigation
+            startGameBtn.addEventListener('click', startGame);
+            homeBtn.addEventListener('click', () => window.location.href = 'index.html');
+            settingsBtn.addEventListener('click', () => showMenu('settings'));
+            donationBtn.addEventListener('click', () => showMenu('donation'));
+
+            // Settings
+            closeSettingsBtn.addEventListener('click', () => showMenu('main'));
+            saveSettingsBtn.addEventListener('click', saveSettings);
+            backToMainBtn.addEventListener('click', () => showMenu('main'));
+
+            // Leaderboard
+            closeLeaderboardBtn.addEventListener('click', () => showMenu('main'));
+            resetScoresBtn.addEventListener('click', resetScores);
+            backFromLeaderboardBtn.addEventListener('click', () => showMenu('main'));
+
+            // Game over
+            playAgainBtn.addEventListener('click', startGame);
+            mainMenuBtn.addEventListener('click', () => showMenu('main'));
+
+            // Donation
+            closeDonationBtn.addEventListener('click', () => showMenu('main'));
+            copyBtn.addEventListener('click', copyWalletAddress);
+
+            // Volume sliders
+            musicVolumeSlider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                e.target.nextElementSibling.textContent = value + '%';
+                audioManager.setMusicVolume(parseInt(value));
+            });
+
+            sfxVolumeSlider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                e.target.nextElementSibling.textContent = value + '%';
+                audioManager.setSFXVolume(parseInt(value));
+            });
+
+            // Rotation indicator
+            const rotationCloseBtn = document.querySelector('.rotation-close-btn');
+            rotationCloseBtn.addEventListener('click', () => {
+                rotationIndicator.style.display = 'none';
+            });
+        }
+
+        // Start game
+        function startGame() {
+            showMenu('game');
+            gameEngine.start();
+            audioManager.play('music');
+        }
+
+        // Show menu
+        function showMenu(menuName) {
+            // Hide all menus
+            mainMenu.style.display = 'none';
+            settingsMenu.style.display = 'none';
+            leaderboardMenu.style.display = 'none';
+            gameOverMenu.style.display = 'none';
+            donationSection.style.display = 'none';
+
+            // Show selected menu
+            switch (menuName) {
+                case 'main':
+                    mainMenu.style.display = 'flex';
+                    break;
+                case 'settings':
+                    settingsMenu.style.display = 'flex';
+                    loadSettingsToUI();
+                    break;
+                case 'leaderboard':
+                    leaderboardMenu.style.display = 'flex';
+                    loadLeaderboard();
+                    break;
+                case 'game':
+                    // Hide all menus for game
+                    break;
+                case 'donation':
+                    donationSection.style.display = 'block';
+                    break;
+            }
+
+            gameState.setCurrentMenu(menuName);
+        }
+
+        // Load settings to UI
+        function loadSettingsToUI() {
+            musicVolumeSlider.value = audioManager.getMusicVolume();
+            musicVolumeSlider.nextElementSibling.textContent = audioManager.getMusicVolume() + '%';
+            
+            sfxVolumeSlider.value = audioManager.getSFXVolume();
+            sfxVolumeSlider.nextElementSibling.textContent = audioManager.getSFXVolume() + '%';
+        }
+
+        // Save settings
+        function saveSettings() {
+            audioManager.setMusicVolume(parseInt(musicVolumeSlider.value));
+            audioManager.setSFXVolume(parseInt(sfxVolumeSlider.value));
+            showToast('Settings saved!', 2000);
+        }
+
+        // Load leaderboard
+        function loadLeaderboard() {
+            currentHighScore.textContent = gameState.highScore.toLocaleString();
+            // Additional leaderboard loading logic would go here
+        }
+
+        // Reset scores
+        function resetScores() {
+            if (confirm('Are you sure you want to reset all scores?')) {
+                localStorage.removeItem('slidingCubeHighScore');
+                gameState.highScore = 0;
+                currentHighScore.textContent = '0';
+                showToast('Scores reset!', 2000);
+            }
+        }
+
+        // Copy wallet address
+        function copyWalletAddress() {
+            const walletAddress = document.getElementById('walletAddress');
+            walletAddress.select();
+            document.execCommand('copy');
+            showToast('Wallet address copied!', 2000);
+        }
+
+        // Check device orientation
+        function checkOrientation() {
+            if (window.innerHeight > window.innerWidth) {
+                rotationIndicator.style.display = 'flex';
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, duration = 3000) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            
+            const container = document.getElementById('toastContainer');
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    container.removeChild(toast);
+                }, 300);
+            }, duration);
+        }
+
+        // Game over handler
+        function showGameOverMenu() {
+            const finalScoreValue = gameState.score;
+            const highScoreValue = gameState.highScore;
+            
+            finalScore.textContent = finalScoreValue.toLocaleString();
+            gameOverHighScore.textContent = highScoreValue.toLocaleString();
+            
+            if (finalScoreValue >= highScoreValue) {
+                newRecordMessage.style.display = 'block';
+            } else {
+                newRecordMessage.style.display = 'none';
+            }
+            
+            showMenu('gameOver');
+        }
+
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', initGame);
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (gameEngine) {
+                gameEngine.resizeCanvas();
+            }
+            checkOrientation();
+        });
+
+        // Make functions globally available
+        window.showGameOverMenu = showGameOverMenu;
+        window.showToast = showToast;
+    </script>
+</body>
+</html> 
