@@ -649,6 +649,18 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
             // Recalculate layout after orientation change
             window.dispatchEvent(new Event('resize'));
+            
+            // Close mobile menu on orientation change to prevent layout issues
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (hamburger && navMenu) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+            
+            // Force a reflow to ensure proper layout calculation
+            document.body.offsetHeight;
         }, 100);
     });
 
@@ -659,8 +671,23 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Close mobile menu on resize to desktop
         if (window.innerWidth > 767) {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (hamburger && navMenu) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        }
+        
+        // Handle mobile menu in landscape mode
+        if (deviceInfo.isMobile && deviceInfo.isLandscape) {
+            const navMenu = document.querySelector('.nav-menu');
+            if (navMenu && navMenu.classList.contains('active')) {
+                // Ensure the menu is properly sized for landscape
+                navMenu.style.height = `calc(100vh - 60px)`;
+                navMenu.style.overflowY = 'auto';
+            }
         }
     });
 
