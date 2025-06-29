@@ -1108,8 +1108,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
     installButton.className = 'btn btn-primary';
     installButton.style.position = 'fixed';
     installButton.style.bottom = '20px';
-    installButton.style.right = '20px';
+    installButton.style.left = '50%';
+    installButton.style.transform = 'translateX(-50%)';
     installButton.style.zIndex = '1000';
+    installButton.style.fontSize = '0.8rem';
+    installButton.style.padding = '8px 16px';
+    installButton.style.minWidth = 'auto';
     
     installButton.addEventListener('click', () => {
         deferredPrompt.prompt();
