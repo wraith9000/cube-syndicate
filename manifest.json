@@ -11,46 +11,18 @@
   "lang": "en",
   "categories": ["games", "entertainment"],
   "icons": [],
-  "screenshots": [
-    {
-      "src": "screenshot-desktop.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Sliding Cube Game on Desktop"
-    },
-    {
-      "src": "screenshot-mobile.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Sliding Cube Game on Mobile"
-    }
-  ],
   "shortcuts": [
     {
       "name": "Start Game",
       "short_name": "Play",
       "description": "Jump into the cyberpunk world and start playing",
-      "url": "/#play",
-      "icons": [
-        {
-          "src": "icon-play.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/#play"
     },
     {
       "name": "How to Play",
       "short_name": "Help",
       "description": "Learn the game controls and mechanics",
-      "url": "/#gameplay",
-      "icons": [
-        {
-          "src": "icon-help.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/#gameplay"
     }
   ],
   "related_applications": [],
