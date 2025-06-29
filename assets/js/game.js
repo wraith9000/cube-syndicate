@@ -362,9 +362,8 @@ const player = {
             this.velocityY = JUMP_FORCE;
             this.jumpsLeft--;
             
-            // Jump effects
+            // Jump effects (removed screen shake for eye comfort)
             this.scale = 1.2;
-            screenShake = 0.3;
             createJumpEffect(this.x + this.width / 2, this.y + this.height / 2);
         }
     },
@@ -772,8 +771,7 @@ function createExplosion(x, y) {
         particles.push(new Particle(x, y, radius, COLORS.particleExplosion, velocity));
     }
     
-    // Screen shake on explosion
-    screenShake = 1.0;
+    // Removed screen shake for eye comfort
 }
 
 function spawnObstacle(template) {
@@ -1051,10 +1049,7 @@ function update(deltaTime) {
         if (!slowMoActive) {
             gameSpeed += 0.2 * (deltaTime * 60);
         }
-        // Add screen shake on high speeds
-        if (gameSpeed > 500) {
-            screenShake = Math.min(screenShake + 0.1, 0.5);
-        }
+        // Removed screen shake on high speeds for eye comfort
     } else {
         // Only update visual effects and grid when not playing
         stars.forEach(star => star.update(deltaTime));
@@ -1113,7 +1108,7 @@ function updateVisualEffects(deltaTime) {
     // Update rainbow hue for disco effect
     rainbowHue = (rainbowHue + deltaTime * 200) % 360;
 
-    // Update screen shake
+    // Update screen shake (only for laser effect now)
     if (screenShake > 0) {
         cameraOffset.x = (Math.random() - 0.5) * screenShake * 20;
         cameraOffset.y = (Math.random() - 0.5) * screenShake * 20;
