@@ -519,6 +519,11 @@ body::before {
     color: #ff00c1;
 }
 
+.powerup.laser {
+    border-color: #ff0000;
+    color: #ff0000;
+}
+
 .powerup i {
     font-size: 2rem;
     text-shadow: 0 0 10px currentColor;
