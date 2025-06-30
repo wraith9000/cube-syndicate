@@ -41,18 +41,27 @@ A complete web application featuring a modern, responsive landing page and an in
 
 ```
 cube-syndicate/
-├── index.html          # Main landing page
-├── styles.css          # Landing page styles
-├── script.js           # Landing page functionality
-├── game.html           # Game page
-├── game.css            # Game styles
-├── game.js             # Game logic and mechanics
-├── sfx/                # Sound effects and music
-│   ├── music.mp3
-│   ├── laserbraam.mp3
-│   └── itemcollect.mp3
-├── manifest.json       # PWA manifest
-└── README.md           # This file
+├── index.html              # Main landing page
+├── game.html               # Game page
+├── manifest.json           # PWA manifest
+├── sw.js                   # Service worker
+├── favicon.ico             # Site favicon
+├── assets/
+│   ├── css/
+│   │   ├── styles.css      # Landing page styles
+│   │   └── game.css        # Game styles
+│   ├── js/
+│   │   ├── script.js       # Landing page functionality
+│   │   ├── game.js         # Game logic and mechanics
+│   │   └── firebase-config.js # Firebase integration
+│   ├── audio/
+│   │   ├── music.mp3       # Background music
+│   │   ├── laserbraam.mp3  # Laser sound effect
+│   │   └── itemcollect.mp3 # Item collection sound
+│   └── icons/
+│       ├── icon-192.png    # PWA icon (192x192)
+│       └── icon-512.png    # PWA icon (512x512)
+└── README.md               # This file
 ```
 
 ## 🎯 How It Works
@@ -84,15 +93,15 @@ cube-syndicate/
 ## 🔧 Customization
 
 ### Landing Page
-- Update `script.js` to modify wallet connection behavior
-- Edit `styles.css` to change the visual theme
+- Update `assets/js/script.js` to modify wallet connection behavior
+- Edit `assets/css/styles.css` to change the visual theme
 - Modify `index.html` to update content and links
 
 ### Game
-- Adjust game speed and difficulty in `game.js`
+- Adjust game speed and difficulty in `assets/js/game.js`
 - Modify visual effects and colors
 - Add new power-ups or obstacles
-- Update sound effects in the `sfx/` directory
+- Update sound effects in the `assets/audio/` directory
 
 ## 🌐 Deployment
 
@@ -110,6 +119,7 @@ The project includes Progressive Web App features:
 - Installable on mobile devices
 - Offline capability (with service worker)
 - App-like experience
+- Custom icons for app installation
 
 ## 🤝 Contributing
 
