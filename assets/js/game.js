@@ -144,7 +144,6 @@ const audio = {
         
         const sound = this.sounds[soundName];
         if (sound) {
-            console.log(`Playing sound: ${soundName}`); // Debug log
             sound.currentTime = 0;
             
             // Set appropriate volume based on sound type
@@ -163,8 +162,6 @@ const audio = {
                     console.log(`Audio play prevented for ${soundName}:`, error);
                 });
             }
-        } else {
-            console.log(`Sound not found: ${soundName}`); // Debug log
         }
     },
     
@@ -1590,8 +1587,6 @@ function activateLaser() {
     }
     
     // Play laser sound for activation
-    console.log('Attempting to play laser sound...'); // Debug log
-    console.log('Audio enabled:', audio.enabled); // Debug log
     audio.play('laser');
     
     // Flash effect - briefly make the screen white
@@ -1622,7 +1617,6 @@ resizeCanvas();
 audio.load(() => {
     // This callback runs when all audio files are loaded.
     // In a more complex game, you might show a "Click to Start" button here.
-    console.log("Audio files loaded and ready.");
     audio.loadSettings(); // Load saved volume settings
 });
 
