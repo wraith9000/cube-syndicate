@@ -1,125 +1,196 @@
-# Cube Syndicate - Integrated Game & Landing Page
+# Sliding Cube - Next.js Version
 
-A complete web application featuring a modern, responsive landing page and an integrated sliding cube game. This project combines a beautiful landing page with a fully functional browser-based game in one cohesive experience.
+A cyberpunk-themed endless runner game built with Next.js, React, and TypeScript.
 
-## 🎮 Features
+## 🎮 Game Features
 
-### Landing Page
-- **Modern Design**: Cyberpunk-themed with neon effects and smooth animations
-- **Wallet Integration**: Full Web3 wallet support (MetaMask, Coinbase Wallet, Trust Wallet, etc.)
-- **Responsive Layout**: Optimized for desktop, tablet, and mobile devices
-- **Interactive Elements**: Animated cubes, particle effects, and smooth scrolling
-- **SEO Optimized**: Meta tags, Open Graph, and Twitter Card support
+- **Endless Runner Gameplay**: Navigate your neon cube through procedurally generated obstacles
+- **Power-ups**: Collect Slow Motion, Shield, and Laser power-ups to enhance your gameplay
+- **Cyberpunk Aesthetic**: Immersive neon visuals with stunning effects and animations
+- **Mobile Optimized**: Touch controls for mobile, keyboard controls for desktop
+- **Web3 Integration**: Connect your wallet and track scores
+- **Responsive Design**: Works perfectly on all devices
 
-### Sliding Cube Game
-- **Endless Runner**: Navigate your neon cube through an endless cyberpunk world
-- **Power-ups**: Collect shields, slow-motion, and laser power-ups
-- **Visual Effects**: Particle systems, screen shake, and neon glow effects
-- **Sound System**: Background music and sound effects with volume controls
-- **Score System**: Local high score tracking and recent scores
-- **Mobile Optimized**: Touch controls and orientation detection
+## 🚀 Getting Started
 
-## 🚀 Quick Start
+### Prerequisites
 
-1. **Clone the repository**:
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. **Install dependencies:**
    ```bash
-   git clone https://github.com/yourusername/cube-syndicate.git
-   cd cube-syndicate
+   npm install
    ```
 
-2. **Open the landing page**:
-   - Simply open `index.html` in your web browser
-   - Or serve it locally: `python -m http.server 8000`
+2. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
 
-3. **Start playing**:
-   - Click "Start Game" on the landing page
-   - The game will open in the same window
-   - Use SPACE or tap to jump over obstacles
-   - Collect power-ups to enhance your gameplay
+3. **Open your browser:**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-## 📁 Project Structure
+### Build for Production
+
+```bash
+npm run build
+npm start
+```
+
+## 🏗️ Project Structure
 
 ```
 cube-syndicate/
-├── index.html              # Main landing page
-├── game.html               # Game page
-├── manifest.json           # PWA manifest
-├── sw.js                   # Service worker
-├── favicon.ico             # Site favicon
-├── assets/
-│   ├── css/
-│   │   ├── styles.css      # Landing page styles
-│   │   └── game.css        # Game styles
-│   ├── js/
-│   │   ├── script.js       # Landing page functionality
-│   │   ├── game.js         # Game logic and mechanics
-│   │   └── firebase-config.js # Firebase integration
-│   ├── audio/
-│   │   ├── music.mp3       # Background music
-│   │   ├── laserbraam.mp3  # Laser sound effect
-│   │   └── itemcollect.mp3 # Item collection sound
-│   └── icons/
-│       ├── icon-192.png    # PWA icon (192x192)
-│       └── icon-512.png    # PWA icon (512x512)
-└── README.md               # This file
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # Root layout with metadata
+│   ├── page.tsx           # Home page (landing)
+│   ├── game/              # Game page
+│   │   ├── page.tsx       # Game component
+│   │   └── game.css       # Game-specific styles
+│   └── globals.css        # Global styles
+├── components/            # React components
+│   ├── Navigation.tsx     # Navbar with wallet integration
+│   ├── Hero.tsx          # Landing page hero section
+│   ├── Features.tsx       # Game features showcase
+│   ├── Gameplay.tsx       # How to play instructions
+│   ├── GameCanvas.tsx     # Game canvas and logic
+│   └── GameMenus.tsx      # Game menus and overlays
+├── public/               # Static assets
+│   ├── assets/           # Audio, icons, etc.
+│   ├── favicon.ico       # Site favicon
+│   └── manifest.json     # PWA manifest
+└── package.json          # Dependencies and scripts
 ```
 
-## 🎯 How It Works
+## 🎯 Key Transformations from Original
 
-1. **Landing Page** (`index.html`): 
-   - Showcases the game with beautiful animations
-   - Provides wallet connection functionality
-   - Contains game information and features
+### 1. **Next.js App Router Structure**
+- Converted from static HTML to Next.js App Router
+- Proper routing with `/` (home) and `/game` (game page)
+- Server-side rendering capabilities
 
-2. **Game Integration**:
-   - Clicking "Start Game" navigates to `game.html`
-   - The game loads with all assets and sound effects
-   - "Home" button in the game returns to the landing page
+### 2. **React Components**
+- **Navigation**: Handles wallet connection and mobile menu
+- **Hero**: Landing page with animated cube and call-to-action
+- **Features**: Showcases game features in a responsive grid
+- **Gameplay**: Interactive how-to-play section
+- **GameCanvas**: Full game implementation with canvas API
+- **GameMenus**: All game menus (main, settings, leaderboard, etc.)
 
-3. **Seamless Experience**:
-   - No external dependencies or separate projects
-   - Everything runs locally in the browser
-   - Smooth transitions between landing page and game
+### 3. **TypeScript Integration**
+- Full TypeScript support for better development experience
+- Type-safe props and state management
+- Proper type definitions for all components
 
-## 🎮 Game Controls
+### 4. **Enhanced Styling**
+- Converted CSS to work with Next.js
+- Maintained all original cyberpunk styling
+- Responsive design preserved
+- CSS modules support ready
 
-- **Desktop**: SPACE to jump
-- **Mobile**: Tap screen to jump
-- **Power-ups**: 
-  - Shield: Protects from one collision
-  - Slow-mo: Slows down time for easier navigation
-  - Laser: Destroys obstacles in your path
+### 5. **Game Logic**
+- Canvas-based game engine
+- Collision detection
+- Power-up system
+- Score tracking
+- Local storage for high scores
 
-## 🔧 Customization
+### 6. **Web3 Integration**
+- MetaMask wallet connection
+- Account management
+- Transaction support ready
 
-### Landing Page
-- Update `assets/js/script.js` to modify wallet connection behavior
-- Edit `assets/css/styles.css` to change the visual theme
-- Modify `index.html` to update content and links
+## 🎮 How to Play
 
-### Game
-- Adjust game speed and difficulty in `assets/js/game.js`
-- Modify visual effects and colors
-- Add new power-ups or obstacles
-- Update sound effects in the `assets/audio/` directory
+1. **Start the Game**: Click "START GAME" on the home page
+2. **Jump**: Press SPACE or tap the screen to jump over obstacles
+3. **Collect Power-ups**:
+   - **Slow Motion** (blue): Slows down time
+   - **Shield** (gold): Protects against one hit
+   - **Laser** (red): Destroys all obstacles
+4. **Survive**: Avoid obstacles and survive as long as possible
+5. **Score**: Your score increases the longer you survive
 
-## 🌐 Deployment
+## 🔧 Configuration
 
-This project can be deployed to any static hosting service:
+### Environment Variables
+Create a `.env.local` file for any API keys or configuration:
 
-- **Vercel**: Drag and drop the folder
-- **Netlify**: Connect your GitHub repository
-- **GitHub Pages**: Enable in repository settings
-- **Any web server**: Upload all files to your server
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+```
 
-## 📱 PWA Features
+### Game Settings
+Game settings are stored in localStorage:
+- Music volume
+- SFX volume  
+- Visual effects toggle
+- High scores
 
-The project includes Progressive Web App features:
+## 🚀 Deployment
 
-- Installable on mobile devices
-- Offline capability (with service worker)
-- App-like experience
-- Custom icons for app installation
+### Vercel (Recommended)
+1. Connect your GitHub repository to Vercel
+2. Vercel will automatically detect Next.js
+3. Deploy with zero configuration
+
+### Other Platforms
+The app can be deployed to any platform that supports Node.js:
+- Netlify
+- Railway
+- DigitalOcean App Platform
+- AWS Amplify
+
+## 🛠️ Development
+
+### Available Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+```
+
+### Code Structure
+
+- **Components**: Reusable React components
+- **Pages**: Next.js pages with routing
+- **Styles**: CSS files for styling
+- **Public**: Static assets and files
+
+## 🎨 Customization
+
+### Styling
+- Modify `app/globals.css` for global styles
+- Edit `app/game/game.css` for game-specific styles
+- Update component-specific styles in each component
+
+### Game Logic
+- Modify `components/GameCanvas.tsx` for game mechanics
+- Update `components/GameMenus.tsx` for menu functionality
+
+### Content
+- Edit component files to change text content
+- Update metadata in `app/layout.tsx`
+
+## 🔮 Future Enhancements
+
+- [ ] Firebase integration for online leaderboards
+- [ ] Multiplayer support
+- [ ] Additional power-ups and obstacles
+- [ ] Sound effects and background music
+- [ ] Progressive Web App (PWA) features
+- [ ] NFT integration for achievements
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🤝 Contributing
 
@@ -129,12 +200,22 @@ The project includes Progressive Web App features:
 4. Test thoroughly
 5. Submit a pull request
 
-## 📄 License
+## 🐛 Troubleshooting
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Common Issues
 
-## 🎉 Ready to Play?
+1. **Canvas not rendering**: Ensure the canvas element is properly mounted
+2. **Audio not working**: Check browser autoplay policies
+3. **Wallet connection issues**: Verify MetaMask is installed and unlocked
+4. **Build errors**: Clear `.next` folder and reinstall dependencies
 
-The integrated Cube Syndicate project is now ready! The landing page provides a beautiful introduction to your game, and clicking "Start Game" seamlessly transitions to the full gaming experience. All in one project, no external dependencies needed.
+### Performance Tips
 
-**Enjoy playing!** 🎮✨ 
+- Use React.memo for expensive components
+- Optimize canvas rendering with requestAnimationFrame
+- Implement proper cleanup in useEffect hooks
+- Use Next.js Image component for optimized images
+
+---
+
+**Enjoy playing Sliding Cube! 🎮✨** 
