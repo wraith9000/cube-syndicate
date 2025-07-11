@@ -1,0 +1,44 @@
+{
+  "components\\GameCanvas.tsx -> firebase/app": {
+    "id": 3915,
+    "files": [
+      "static/chunks/612.517f960c7066db2f.js",
+      "static/chunks/915.ff95c492d32e1e35.js"
+    ]
+  },
+  "components\\GameCanvas.tsx -> firebase/firestore": {
+    "id": 5317,
+    "files": [
+      "static/chunks/bc9e92e6.fcf73f11cde3400f.js",
+      "static/chunks/612.517f960c7066db2f.js",
+      "static/chunks/366.fc492f943e5ae51c.js"
+    ]
+  },
+  "components\\Leaderboard.tsx -> firebase/app": {
+    "id": 3915,
+    "files": [
+      "static/chunks/612.517f960c7066db2f.js",
+      "static/chunks/915.ff95c492d32e1e35.js"
+    ]
+  },
+  "components\\Leaderboard.tsx -> firebase/firestore": {
+    "id": 5317,
+    "files": [
+      "static/chunks/bc9e92e6.fcf73f11cde3400f.js",
+      "static/chunks/612.517f960c7066db2f.js",
+      "static/chunks/366.fc492f943e5ae51c.js"
+    ]
+  },
+  "node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
+    "id": 472,
+    "files": [
+      "static/chunks/472.a3826d29d6854395.js"
+    ]
+  },
+  "node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
+    "id": 9341,
+    "files": [
+      "static/chunks/341.df3329d77a5faa19.js"
+    ]
+  }
+}
