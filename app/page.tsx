@@ -8,6 +8,7 @@ import { useWallet } from '@/lib/useWallet'
 
 export default function Home() {
   const [showLeaderboard, setShowLeaderboard] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { address, isConnected, formatAddress } = useWallet()
 
   const startGame = () => {
@@ -35,16 +36,16 @@ export default function Home() {
             <i className="fas fa-cube"></i>
             <span>SLIDING CUBE</span>
           </div>
-          <ul className="nav-menu">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#gameplay">How to Play</a></li>
-            <li><a href="#leaderboard" onClick={handleLeaderboardClick}>Leaderboard</a></li>
+          <ul className={`nav-menu${isMenuOpen ? ' active' : ''}`}>
+            <li><a href="#home" onClick={() => setIsMenuOpen(false)}>Home</a></li>
+            <li><a href="#features" onClick={() => setIsMenuOpen(false)}>Features</a></li>
+            <li><a href="#gameplay" onClick={() => setIsMenuOpen(false)}>How to Play</a></li>
+            <li><a href="#leaderboard" onClick={e => { handleLeaderboardClick(e); setIsMenuOpen(false); }}>Leaderboard</a></li>
             <li className="wallet-connect">
               <WalletConnect />
             </li>
           </ul>
-          <div className="hamburger" aria-label="Toggle navigation menu">
+          <div className="hamburger" aria-label="Toggle navigation menu" onClick={() => setIsMenuOpen(v => !v)}>
             <span></span>
             <span></span>
             <span></span>
