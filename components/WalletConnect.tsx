@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAccount, useConnect, useDisconnect, useBalance, useChainId, useSwitchChain } from 'wagmi'
 import { config } from '@/lib/wagmi'
 import { formatEther, formatUnits } from 'viem'
@@ -8,6 +8,7 @@ import { formatEther, formatUnits } from 'viem'
 export default function WalletConnect() {
   const [isConnecting, setIsConnecting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
   
   const { address, isConnected, isConnecting: wagmiConnecting } = useAccount()
   const { connect, connectors, error: connectError } = useConnect()
@@ -16,6 +17,11 @@ export default function WalletConnect() {
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
 
+  useEffect(() => {
+    // Check if we're on mobile
+    setIsMobile(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+  }, [])
+
   const handleConnect = async (connector: any) => {
     setIsConnecting(true)
     setError(null)
@@ -23,7 +29,27 @@ export default function WalletConnect() {
     try {
       await connect({ connector })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to connect wallet')
+      console.error('Connection error:', err)
+      let errorMessage = 'Failed to connect wallet'
+      
+      if (err instanceof Error) {
+        errorMessage = err.message
+      } else if (typeof err === 'string') {
+        errorMessage = err
+      } else if (err && typeof err === 'object' && 'message' in err) {
+        errorMessage = String(err.message)
+      }
+      
+      // Handle specific mobile errors
+      if (isMobile && errorMessage.includes('provider not found')) {
+        errorMessage = 'No wallet app detected. Please install MetaMask, WalletConnect, or another compatible wallet app.'
+      } else if (errorMessage.includes('User rejected')) {
+        errorMessage = 'Connection was cancelled by user'
+      } else if (errorMessage.includes('No provider')) {
+        errorMessage = 'No wallet provider found. Please install a compatible wallet extension.'
+      }
+      
+      setError(errorMessage)
     } finally {
       setIsConnecting(false)
     }
@@ -83,14 +109,47 @@ export default function WalletConnect() {
     )
   }
 
+  // Filter connectors based on mobile/desktop
+  const availableConnectors = connectors.filter(connector => {
+    if (isMobile) {
+      // On mobile, prioritize WalletConnect and MetaMask
+      return ['walletConnect', 'metaMask', 'coinbaseWallet'].includes(connector.id)
+    } else {
+      // On desktop, show all connectors
+      return true
+    }
+  })
+
   return (
     <div className="wallet-connect-container">
+      {isMobile && (
+        <div className="mobile-notice">
+          <i className="fas fa-mobile-alt"></i>
+          <span>Mobile detected - Use WalletConnect or MetaMask app</span>
+        </div>
+      )}
+      
       <button 
         className="btn-wallet connect"
         onClick={() => {
-          const injectedConnector = connectors.find(c => c.id === 'injected')
-          if (injectedConnector) {
-            handleConnect(injectedConnector)
+          // On mobile, try WalletConnect first, then MetaMask
+          if (isMobile) {
+            const walletConnectConnector = connectors.find(c => c.id === 'walletConnect')
+            const metaMaskConnector = connectors.find(c => c.id === 'metaMask')
+            
+            if (walletConnectConnector && walletConnectConnector.ready) {
+              handleConnect(walletConnectConnector)
+            } else if (metaMaskConnector && metaMaskConnector.ready) {
+              handleConnect(metaMaskConnector)
+            } else {
+              setError('No compatible wallet found. Please install MetaMask or use WalletConnect.')
+            }
+          } else {
+            // On desktop, try injected first
+            const injectedConnector = connectors.find(c => c.id === 'injected')
+            if (injectedConnector) {
+              handleConnect(injectedConnector)
+            }
           }
         }}
         disabled={isConnecting || wagmiConnecting}
@@ -117,7 +176,7 @@ export default function WalletConnect() {
       
       {/* Wallet Options Dropdown */}
       <div className="wallet-options">
-        {connectors.map((connector) => (
+        {availableConnectors.map((connector) => (
           <button
             key={connector.id}
             className="wallet-option"
