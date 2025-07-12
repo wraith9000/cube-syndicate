@@ -23,6 +23,11 @@ export default function GamePage() {
   const [currentHighScore, setCurrentHighScore] = useState(0);
   const [scoreList, setScoreList] = useState<any[]>([]);
   const { address, isConnected, formatAddress } = useWallet();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     // Load saved settings
@@ -322,11 +327,11 @@ export default function GamePage() {
               <input 
                 type="text" 
                 id="walletAddress" 
-                value={isConnected && address ? formatAddress(address) : "Not Connected"} 
+                value={isClient && isConnected && address ? formatAddress(address) : "Not Connected"} 
                 readOnly 
               />
               <button id="copyBtn" className="copy-btn" onClick={handleCopyWallet}>
-                {isConnected ? "COPY" : "CONNECT"}
+                {isClient ? (isConnected ? "COPY" : "CONNECT") : "CONNECT"}
               </button>
             </div>
         </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import ScriptHandler from '@/components/ScriptHandler'
 import LeaderboardModal from '@/components/LeaderboardModal'
-import WalletConnect from '@/components/WalletConnect'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useWallet } from '@/lib/useWallet'
 
 export default function Home() {
@@ -42,7 +42,7 @@ export default function Home() {
             <li><a href="#gameplay" onClick={() => setIsMenuOpen(false)}>How to Play</a></li>
             <li><a href="#leaderboard" onClick={e => { handleLeaderboardClick(e); setIsMenuOpen(false); }}>Leaderboard</a></li>
             <li className="wallet-connect">
-              <WalletConnect />
+              <ConnectButton />
             </li>
           </ul>
           <div className="hamburger" aria-label="Toggle navigation menu" onClick={() => setIsMenuOpen(v => !v)}>
