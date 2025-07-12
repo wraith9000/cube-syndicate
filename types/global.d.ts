@@ -2,7 +2,7 @@
 
 declare global {
   interface Window {
-    // Ethereum wallet integration
+    // Ethereum wallet integration (legacy support)
     ethereum?: {
       request: (args: { method: string; params?: any[] }) => Promise<any>;
       on: (event: string, callback: (params: any) => void) => void;

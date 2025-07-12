@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import ViewportHandler from '@/components/ViewportHandler'
+import WalletProvider from '@/components/WalletProvider'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -85,8 +86,10 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/icon-72.png" />
       </head>
       <body className={inter.className}>
-        <ViewportHandler />
-        {children}
+        <WalletProvider>
+          <ViewportHandler />
+          {children}
+        </WalletProvider>
         
         {/* Firebase SDK removed for consistency; use dynamic import in React components only. */}
         

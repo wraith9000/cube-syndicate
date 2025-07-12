@@ -3,25 +3,12 @@
 import { useState, useEffect } from 'react'
 import ScriptHandler from '@/components/ScriptHandler'
 import LeaderboardModal from '@/components/LeaderboardModal'
+import WalletConnect from '@/components/WalletConnect'
+import { useWallet } from '@/lib/useWallet'
 
 export default function Home() {
-  const [walletConnected, setWalletConnected] = useState(false)
-  const [currentAccount, setCurrentAccount] = useState<string | null>(null)
   const [showLeaderboard, setShowLeaderboard] = useState(false)
-
-  useEffect(() => {
-    // Check if wallet is already connected
-    if (typeof window !== 'undefined' && window.ethereum) {
-      window.ethereum.request({ method: 'eth_accounts' })
-        .then((accounts: string[]) => {
-          if (accounts.length > 0) {
-            setWalletConnected(true)
-            setCurrentAccount(accounts[0])
-          }
-        })
-        .catch(console.error)
-    }
-  }, [])
+  const { address, isConnected, formatAddress } = useWallet()
 
   const startGame = () => {
     window.location.href = '/game'
@@ -54,10 +41,7 @@ export default function Home() {
             <li><a href="#gameplay">How to Play</a></li>
             <li><a href="#leaderboard" onClick={handleLeaderboardClick}>Leaderboard</a></li>
             <li className="wallet-connect">
-              <button id="wallet-connect-btn" className="btn-wallet">
-                <i className="fas fa-wallet"></i>
-                <span id="wallet-text">Connect Wallet</span>
-              </button>
+              <WalletConnect />
             </li>
           </ul>
           <div className="hamburger" aria-label="Toggle navigation menu">

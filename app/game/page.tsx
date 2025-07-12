@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import GameCanvas from "@/components/GameCanvas";
 import ScriptHandler from "@/components/ScriptHandler";
 import AudioManager from "@/components/AudioManager";
+import { useWallet } from "@/lib/useWallet";
 import "./game.css";
 
 export default function GamePage() {
@@ -21,6 +22,7 @@ export default function GamePage() {
   const [visualEffects, setVisualEffects] = useState(true);
   const [currentHighScore, setCurrentHighScore] = useState(0);
   const [scoreList, setScoreList] = useState<any[]>([]);
+  const { address, isConnected, formatAddress } = useWallet();
 
   useEffect(() => {
     // Load saved settings
@@ -94,9 +96,12 @@ export default function GamePage() {
   };
 
   const handleCopyWallet = () => {
-    const walletAddress = "0x922abf80ce0a08d17a0e308beb261e3c67eb0e1c";
-    navigator.clipboard.writeText(walletAddress);
-    showToast("Wallet address copied to clipboard!");
+    if (address) {
+      navigator.clipboard.writeText(address);
+      showToast("Wallet address copied to clipboard!");
+    } else {
+      showToast("No wallet connected!");
+    }
   };
 
   const handleCloseRotation = () => {
@@ -312,11 +317,18 @@ export default function GamePage() {
           <button id="closeDonationBtn" className="close-btn" onClick={handleCloseDonation}>&times;</button>
           <h3>Support the Developer</h3>
           <p>If you enjoy this game, consider supporting its development!</p>
-          <div className="wallet-container">
-            <label className="wallet-label">ARENA:</label>
-            <input type="text" id="walletAddress" value="0x922abf80ce0a08d17a0e308beb261e3c67eb0e1c" readOnly />
-            <button id="copyBtn" className="copy-btn" onClick={handleCopyWallet}>COPY</button>
-          </div>
+                      <div className="wallet-container">
+              <label className="wallet-label">ARENA:</label>
+              <input 
+                type="text" 
+                id="walletAddress" 
+                value={isConnected && address ? formatAddress(address) : "Not Connected"} 
+                readOnly 
+              />
+              <button id="copyBtn" className="copy-btn" onClick={handleCopyWallet}>
+                {isConnected ? "COPY" : "CONNECT"}
+              </button>
+            </div>
         </div>
       </div>
       
