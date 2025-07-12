@@ -42,7 +42,7 @@ export default function Home() {
             <li><a href="#gameplay" onClick={() => setIsMenuOpen(false)}>How to Play</a></li>
             <li><a href="#leaderboard" onClick={e => { handleLeaderboardClick(e); setIsMenuOpen(false); }}>Leaderboard</a></li>
             <li className="wallet-connect">
-              <ConnectButton />
+              <ConnectButton showBalance={false} />
             </li>
           </ul>
           <div className="hamburger" aria-label="Toggle navigation menu" onClick={() => setIsMenuOpen(v => !v)}>

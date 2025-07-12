@@ -35,11 +35,6 @@ export default function WalletStatus() {
         <i className="fas fa-wallet"></i>
         <span>{formatAddress(address)}</span>
       </div>
-      {balance && (
-        <div className="wallet-status-balance">
-          <span>{balance.value} {balance.symbol}</span>
-        </div>
-      )}
       {chain && (
         <div className="wallet-status-network">
           <span>{getNetworkName(chain.id)}</span>
